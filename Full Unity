@@ -1,0 +1,269 @@
+Unity3D'de, bir şeye kuvvet yaoni force  uygulamak istiyorsanız ilk önce  
+public Rigidbody rb;  
+şeklinde  bir rigidbody deişkeni oluşturmalısn.
+Daha sonra 
+Void Update(){
+    rb.add.Force(new vector3(x,y,z))
+
+//şeklinde eklersin
+}
+
+klavyeden  veri alarak yapıcaksanda
+
+Void Update(){
+     if(input.getkey(keycode.space)
+         rb.add.force(new vector3(x,y,z))
+}
+şeklinde yaparsın
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Daha sonra kafamın zor bastığı yere gelirsek
+
+public class KupScript : MonoBehaviour
+{
+
+    public Rigidbody rb;
+    // Start is called before the first frame update
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
+ 
+Burda   rigidbody rb  diyerek rigidbody  classından  bir  rb değişkeni tanımlıyoruz ve sonr
+tekrar componente eşitleyerek sonrasında  bir objenin içine atıyoruz  bu eşitleme işleminin sebebi içine attığımız objeyle etkileşime geçiceğini anlamasını sağlamak. 
+Bunu başka bir türlüde yapabiliriz eğer public şekilde tanımlarsak bunu  daha sonra içine attığımız nesnenin yanındaki yuvarlaktan nesneyi seçerek bunun bir diğer yöntemini keşfetmiş oluruz.
+ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------      
+
+
+public class PlaceScript : MonoBehaviour
+{
+    public Rigidbody rb;
+    public void OnCollisionEnter(Collision collision)
+    {
+        if(collision.collider.tag == "place")
+        {
+            Debug.Log("çarpışma gerçekleşti");
+            rb.AddForce(new Vector3(0 , 1000 , 0));
+        }
+    }
+
+}
+
+
+Burda dikkat ediceğimiz kısım "OnCollisionEnter"  kısmı oncollisionenter  unity de bir çarpışma fonksiyonudur.
+Buradaki kod bloğundaki amaç  tag ı    place  olan  bir şeye çarptığı anda  y ekseninde 1000 lik bir force uygulamak.
+Debug.log() kısmı da konsola yazı yazdırmaya  yarar.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+public class CameraScript : MonoBehaviour
+{
+    public Transform tf;
+    public Vector3 ofset;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+         transform.position = tf.position;
+          transform.position += ofset;
+    }
+}
+
+
+
+Bu bir kamera scriptinden alınmış kod bloğu "transform tf" diyerek  transform sınıfından  tf değişkenini türettik  ve sonra update kısmımızda  
+ transform.position = tf.position;   
+ transform position  bizim kameramızın konumu  demek. 
+Aslnda bu scripti içine attığımız objenin konumu demek  biz buna  tf.positionu  atama işlemi yapıyoruz   daha sonrasındada tf.positionumuzun kim olduğunu seçiceğiz.
+
+Bu koddan sonra kameramız bir objenin içine girmiş olucak buda çok işimize yaricak bir şey deil çünkü sizde denerseniz objenin içine girdiğimiz için hiç bir şey görmediğimizi fark edersiniz.
+Burda ofset yani (öteleme diyebiliriz) komutunu kullanarak araya biraz mesafe koyuyoruz.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+public class BallControll : MonoBehaviour
+{
+    public GameObject GoPrefab; // Prefab nesnenin referansını almak için bir değişken
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            // Prefab'den bir nesne oluştur
+            GameObject instantiatedObject = Instantiate(GoPrefab, new Vector3(0,10,0), transform.rotation);
+
+            // Oluşturulan nesneyi sahneye eklemek istiyorsanız:
+            //instantiatedObject.transform.SetParent(transform.parent);
+        }
+    }
+}
+
+
+
+Burda dikkat ediceğimiz kısım "instantiante"   komutu  bu komut 3  farklı parametre ister   (1) oluşturulacak nese yani prefab  (2) nesnenin konumu positionu (3) nesnenin rotationu
+bu  ilk başta biraz karmaşık  gelebilir 
+
+Yapıcağımız şey  
+ilk önce boş bir obje  oluşturmak.
+Sonra bir prefab belirlemek.
+En son ise bir script açmak.
+
+
+
+Açtığımız boş objeye scriptimizi bağlıyoruz .
+Sonra da  scriptimizin hemen yanındaki  daireden  prefab  objemizi seçiyoruz.
+Bitti.
+
+Eğer istersek 
+ Vector3 pos = new Vector3(Random.Range(-5,5),6,Random.Range(-5,5));
+kod parçasını da ekleyerek  100 blokluk bir alanda rastgele bölgelere düşmesini de sağlayabiliriz.
+random.range == rastgele anlamı katıyor.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+public class NewBehaviourScript : MonoBehaviour
+{
+    public GameObject Patlama;
+
+      
+    public void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.tag == "Patlangaç")
+        {
+            Destroy(collision.gameObject);
+            Debug.Log("çarptı");
+            Instantiate(Patlama,this.gameObject.transform.position, transform.rotation);
+            Destroy(this.gameObject);
+        }
+    }
+
+
+}
+
+Bu kod parçası çarpışma durumunu ele alıyor ve sonrasında ne olucağına karar veriyor.
+Destroy(collision.gameObject);     kısmı  çarpılan nesnenin yok edilmesi anlamına geliyor.
+ınstantiante(Patlama,this.gameObject.transform.position,transform.rotation);        kısmı ise  "Patlama" isimli  gameobjecti  çarpışmanın gerçekleştiği alana çağırıyor.
+Ve sonra   destroy this.gameObject  kısmı ile  çarpan nesneyide ortadan kaldırıyor.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+public class KutuTriggerKontrol : MonoBehaviour
+{
+
+    private void OnTriggerEnter(Collider go)
+    {
+        Debug.Log("Kutu içerisine giren nesne" + go.name);
+    }
+}
+
+OnTriggerKontrol  methodu    bir objenin belirttiğimiz yerden geçip geçmediğini anlamamız konusunda yardımcı oluyor.
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+public class TopControl : MonoBehaviour
+{
+
+    Rigidbody body;
+    float hiz = 2.5f;
+    // Start is called before the first frame update
+    void Start()
+    {
+        body = GetComponent<Rigidbody>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        float yatay = Input.GetAxis("Horizontal");
+        float dikey = Input.GetAxis("Vertical");
+        Vector3 kuvvet = new Vector3(yatay,0,dikey);
+        body.AddForce(kuvvet*hiz);
+    }
+}
+
+
+ horizontal yatay tuşları yani atamayı deiştirmesseniz  a  ve  d  yi ifade eder.
+ vertical de  dikey tuşları yani w  ve  s  yi ifade eder.
+  
+ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Bugün prefabı hatalı kullandığım içim 30 dk boşa çabaladım.
+prefabı kullanırken kopyayı deil assets  kısmındaki prefabı kullanmalıymışız.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+public class SoundControlScript : MonoBehaviour
+{
+    public AudioClip patlama;
+    AudioSource asource;
+    // Start is called before the first frame update
+    void Start()
+    {
+        asource = GetComponent<AudioSource>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            asource.Pause();
+        }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            asource.Play();
+        }
+        if(Input.GetKeyDown(KeyCode.E)) 
+        {
+          asource.PlayOneShot(patlama, .7f);
+        }
+    }
+}
+
+ses eklemenin başka bir yöntemi ise herhangi bir  audio source componenti kullanmadan
+AudioSource.PlayClipAtPoint (patlama, new vector3(x,y,z))
+şeklinde müziği seçip  position belirleyip o konuma çağırabilirsiniz.
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+public class Camera : MonoBehaviour
+{
+    Vector2 farePos;
+    Vector2 gecisPos;
+
+   
+    public float yumusalik = 2.0f;
+
+    GameObject oyuncu;
+
+    private void Start()
+    {
+        oyuncu = this.transform.parent.gameObject;
+    }
+
+    private void Update()
+    {
+        Vector2 md = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
+        gecisPos.x = Mathf.Lerp(gecisPos.x,md.x,1f/yumusalik);
+        gecisPos.y = Mathf.Lerp(gecisPos.y,md.y,1f/yumusalik);
+        farePos += gecisPos;
+
+        transform.localRotation = Quaternion.AngleAxis(-farePos.y,Vector3.right);
+        oyuncu.transform.localRotation = Quaternion.AngleAxis(farePos.x,oyuncu.transform.up);
+    }
+
+
+}
